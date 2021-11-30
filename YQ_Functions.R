@@ -12,24 +12,24 @@ matsplitter <- function(mat, n, direction = "rows") {
     rg <- (dim(mat)[1])%/%n
     rg1 <- (dim(mat)[1])%/%n + (dim(mat)[1])%%n
     #(n-1)*rg + rg1 == dim(mat)[1]
-    my_list <- list()
+    my_list <- vector(mode = "list", length = n)
     for (i in 1:(n-1)){ # Head of for-loop
       new_element <- mat[((i-1)*rg+1):(i*rg), ]        # Create new list element
-      my_list[[length(my_list) + 1]] <- new_element    # Append new list element
+      my_list[[i]] <- new_element    # Fill each list element
     } 
-    my_list[[length(my_list) + 1]] <- mat[((n-1)*rg+1):(dim(mat)[1]), ]
-    cat("Exported", length(my_list), "chunks of matrix, split across", direction, "\n")
+    my_list[[n]] <- mat[((n-1)*rg+1):(dim(mat)[1]), ]
+    message("Exported ", length(my_list), " chunks of matrix, split across ", direction)
   } else if (direction == "cols") {
     cg <- (dim(mat)[2])%/%n
     cg1 <- (dim(mat)[2])%/%n + (dim(mat)[2])%%n
     #(n-1)*cg + cg1 == dim(mat)[2]
-    my_list <- list()
+    my_list <- vector(mode = "list", length = n)
     for (i in 1:(n-1)) { # Head of for-loop
       new_element <- mat[ ,((i-1)*cg+1):(i*cg)]        # Create new list element
-      my_list[[length(my_list) + 1]] <- new_element    # Append new list element
+      my_list[[i]] <- new_element    # Fill each list element
     } 
-    my_list[[length(my_list) + 1]] <- mat[ ,((n-1)*cg+1):(dim(mat)[2])]
-    cat("Exported", length(my_list), "chunks of matrix, split across", direction, "\n")
+    my_list[[n]] <- mat[ ,((n-1)*cg+1):(dim(mat)[2])]
+    message("Exported ", length(my_list), " chunks of matrix, split across ", direction)
   } else {stop("direction should be 'rows' or 'cols'!")}
   return(my_list)
 }
@@ -126,8 +126,8 @@ QCsplitter <- function(rgSet,detPthre=0.000001,detPtype="negative",nbthre=3,samp
   qcmat <- nbead<nbthre | detP>detPthre
   badValuePerSample <- apply(qcmat,2,sum)/nrow(qcmat)
   flag <- badValuePerSample > samplethre ##| bisul < bisulthre##
-  cat(sum(flag)," samples with percentage of low quality CpG value greater than ",
-      samplethre, "\n")
+  message(sum(flag)," samples with percentage of low quality CpG value greater than ",
+      samplethre)
   badsample=colnames(qcmat)[flag]
   
   ##low quality CpGs
@@ -143,7 +143,7 @@ QCsplitter <- function(rgSet,detPthre=0.000001,detPtype="negative",nbthre=3,samp
   
   #Identifying outlier samples
   if(outlier){
-    cat("Identifying ourlier samples based on beta or total intensity values...\n")
+    message("Identifying ourlier samples based on beta or total intensity values...")
     mdat=mdat[rownames(qcmat),]
     mdat=mdat[,colnames(qcmat)]
     #outliers based on total intensity values
@@ -163,4 +163,3 @@ QCsplitter <- function(rgSet,detPthre=0.000001,detPtype="negative",nbthre=3,samp
 # ###Testing
 # qc <- QCsplitter(rgSet,detPthre=0.000001,detPtype="negative",nbthre=3,samplethre=0.05,CpGthre=0.05,
 #                        bisulthre=NULL,outlier=TRUE, chunk_num=10)
-
